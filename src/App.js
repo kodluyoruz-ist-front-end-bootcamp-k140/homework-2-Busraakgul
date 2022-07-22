@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
+
 // import other from './Other.module.css'; .module is important!
 // import { TitleClassComponent, TitleFnComponent } from "./components/title"
 
@@ -11,6 +13,23 @@ import { Button } from "./components/button"
 function App() {
 
   const [activeTab, setActiveTab] = useState("fn")
+
+  const [todos, setTodos] =useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [todosPerPage, setTodosPerPage] = useState(10);
+
+  useEffect( () => {
+    const fetchTodos = async () => {
+      setLoading(true);
+      const res = await axios.get('https://jsonplaceholder.typicode.com/todos');
+      setTodos(res.data);
+      setLoading(false);
+    }
+    fetchTodos();
+  },[]);
+
+  console.log(todos);
 
   return (
     <div className="App">
@@ -27,8 +46,4 @@ function App() {
     </div>
   );
 }
-
-
-
-
 export default App;

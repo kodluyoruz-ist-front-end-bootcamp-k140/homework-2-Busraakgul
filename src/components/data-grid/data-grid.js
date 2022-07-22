@@ -1,17 +1,34 @@
 import React, { useEffect, useState } from "react"
 import { Button } from "../button"
 import { FormItem } from "../form-item"
+import Pagination from "../pagination/pagination"
 
 export function DataGrid() {
 
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
 
+  //rjfhdkjfndfneefef
+
+//todo listelerini sıralama:
   const [todo, setTodo] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemPerPage, setitemPerPage] = useState(30)
+  const[pageId, setPageId] = useState("asc")
+  const[pageName, setPageName] = useState("asc")
+  const[pageRight, setPageRight] = useState("asc")
+
 
   useEffect(() => {
     loadData()
-  }, [])
+  },
+  [itemPerPage, setitemPerPage])
+  const indexOfLastitem = currentPage * itemPerPage;
+  const indexOfFirstitem = indexOfLastitem - itemPerPage;
+  const currentitem = items.slice(indexOfFirstitem, indexOfLastitem);
+  const totalPagesNum = Math.ceil(items.length / itemPerPage)
+
+
 
   const loadData = () => {
     setLoading(true)
@@ -29,7 +46,8 @@ export function DataGrid() {
   const renderBody = () => {
     return (
       <React.Fragment>
-        {items.sort((a, b) => b.id - a.id).map((item, i) => {
+        {currentitem.map((item, i) => 
+        {
           return (
             <tr key={i}>
               <th scope="row" >{item.id}</th>
@@ -49,13 +67,18 @@ export function DataGrid() {
   const renderTable = () => {
     return (
     <>
+
+      <Pagination pages = {totalPagesNum} setCurrentPage={setCurrentPage}/>
       <Button onClick={onAdd}>Ekle</Button>
       <table className="table">
         <thead>
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">Başlık</th>
-            <th scope="col">Durum</th>
+            <th scope="col" 
+             onClick={() => reverseId(items.id)}>Id</th>
+            <th scope="col" 
+             onClick={() => reverseName(items.name)}>Başlık</th>
+            <th scope="col" 
+             onClick={() => reverseRight(items.right)}>Durum</th>
             <th scope="col">Aksiyonlar</th>
           </tr>
         </thead>
@@ -65,6 +88,47 @@ export function DataGrid() {
       </table>
     </>
     )
+  }
+
+  const reverseId = (col) => {
+    if(pageId === "asc"){
+      const reversed = [...items].sort((a, b) => (a.id > b.id ? -1 : 1))
+      setPageId("desc");
+      setItems(reversed);
+    }else{
+      const reversed = [...items].sort((a, b) => (a.id > b.id ? 1 : -1))
+      setPageId("asc");
+      setItems(reversed);
+    }
+  }
+
+
+  const reverseName = (col) => {
+    if(pageName === "asc"){
+      const reversed = [...items].sort((a, b) => (a.id > b.id ? -1 : 1))
+      setPageId("desc");
+      setItems(reversed);
+    }else{
+      const reversed = [...items].sort((a, b) => (a.id > b.id ? 1 : -1))
+      setPageName("asc");
+      setItems(reversed);
+    }
+  }
+  
+
+  const reverseRight = (col) => {
+
+    if(pageRight === "asc"){
+      const reversed = [...items].sort((a, b) => 
+      (a.id > b.id ? -1 : 1));
+      setPageRight("desc");
+      setItems(reversed);
+
+    }else{
+      const reversed = [...items].sort((a, b) => (a.id > b.id ? 1 : -1))
+      setPageRight("asc");
+      setItems(reversed);
+    }
   }
 
   const saveChanges = () => {
